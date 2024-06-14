@@ -1,7 +1,7 @@
 package com.example.demo;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -9,7 +9,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class SignalingSocketHandler extends TextWebSocketHandler {
-  private final Map<String, WebSocketSession> sessions = new HashMap<>();
+  private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -18,9 +18,11 @@ public class SignalingSocketHandler extends TextWebSocketHandler {
 
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    String payload = message.getPayload();
+    System.out.println(payload);
     for (WebSocketSession s : sessions.values()) {
       if (!s.getId().equals(s.getId())) {
-        s.sendMessage(message);
+        s.sendMessage(new TextMessage(payload));
       }
     }
   }
