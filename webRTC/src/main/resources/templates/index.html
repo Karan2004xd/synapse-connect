@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Testing WebRTC</title>
-    <link href="css/styles.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Hello</h1>
-    <div class="videos">
-      <video width="30%" height="40%" muted id="localVideo"></video>
+    <h1>WebRTC Meeting Room</h1>
+    <div class="main-div">
+      <video width="40%" height="50%" id="local-video" autoplay playsinline></video>
+      <button type="button" id="join-meeting">Join Meeting</button>
     </div>
   </body>
-  <script src="js/app.js" defer></script>
+  <script src="js/app.js" defer type="module"></script>
 </html>
