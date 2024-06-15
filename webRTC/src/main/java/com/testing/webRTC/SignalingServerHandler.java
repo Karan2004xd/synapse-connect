@@ -1,5 +1,6 @@
 package com.testing.webRTC;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,17 +9,27 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class SignalingServerHandler extends TextWebSocketHandler {
   private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+
+  private Map<String, String> parseMessage(String payload) throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    Map<String, String> map = mapper.readValue(payload, Map.class);
+    return map;
+  }
 
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
     String payload = message.getPayload();
-    for (WebSocketSession s : sessions.values()) {
-      if (!s.getId().equals(session.getId())) {
-        System.out.println(sessions.size());
-        s.sendMessage(message);
-      }
+    Map<String, String> msg = parseMessage(payload);
+
+    String targetPeerId = msg.get("targetPeerId");
+    WebSocketSession targetSession = sessions.get(targetPeerId);
+
+    if (targetSession != null && targetSession.isOpen()) {
+      targetSession.sendMessage(new TextMessage(payload));
     }
   }
 
