@@ -19,8 +19,8 @@ export class ConnectionHandler {
       iceServers: [
         {
           urls: [
-            'stun:stun.l.google.com:19302',
-            'stun:stun1.l.google.com:19302'
+            'stun:stun.l.google.com:19302'
+            // 'stun:stun1.l.google.com:19302'
           ]
         }
       ]
@@ -36,10 +36,10 @@ export class ConnectionHandler {
           this.#id = data.id;
           break;
         case 'ice-candidate':
-          this.#addIceCandidate(data.iceCandidate);
+          this.#addIceCandidate(JSON.parse(data.iceCandidate));
           break;
         case 'create-offer':
-          this.#answerOffer(data.offer, data.iceCandidates);
+          this.#answerOffer(JSON.parse(data.offer));
           break;
         default:
           break;
@@ -58,7 +58,7 @@ export class ConnectionHandler {
       this.#peerConnection.setLocalDescription(offer);
       this.#signalingServer.send(JSON.stringify({
         type: 'create-offer',
-        offer: offer,
+        offer: JSON.stringify(offer),
       }));
     } catch (error) {
       console.log(error);
@@ -97,13 +97,14 @@ export class ConnectionHandler {
         if (event.candidate) {
           this.#signalingServer.send(JSON.stringify({
             type: 'ice-candidate',
-            iceCandidate: event.candidate
+            iceCandidate: JSON.stringify(event.candidate)
           }));
         }
       });
 
       if (offerObj) {
-        await this.#peerConnection.setRemoteDescription(offerObj.offer);
+        console.log(offerObj);
+        await this.#peerConnection.setRemoteDescription(offerObj);
       }
     }
   }
@@ -111,26 +112,28 @@ export class ConnectionHandler {
   async #answerOffer(offerObj, iceCandidates) {
     // console.log(offerObj, iceCandidates);
     // this.#addIceCandidate(iceCandidates);
-    // await this.#getUserMedia();
-    // await this.#createPeerConnection(offerObj);
-    // const answer = await this.#peerConnection.createAnswer({});
-    // await this.#peerConnection.setLocalDescription(answer);
+    await this.#getUserMedia();
+    await this.#createPeerConnection(offerObj);
+    const answer = await this.#peerConnection.createAnswer({});
+    await this.#peerConnection.setLocalDescription(answer);
 
-    // console.log(offerObj);
-    // console.log(answer);
+    console.log(offerObj);
+    console.log(answer);
 
-    // offerObj.answer = answer;
+    offerObj.answer = answer;
 
     // const offerIceCandidates = await 
   }
 
   #addIceCandidate(iceCandidate) {
     console.log(iceCandidate);
-    this.#peerConnection.addIceCandidate(iceCandidate);
+    if (iceCandidate) {
+      this.#peerConnection.addIceCandidate(iceCandidate);
+      console.log('Ice Candidate added');
+    }
 
     // for (let i = 0; i < iceCandidates.length; i++) {
     //   this.#peerConnection.addIceCandidate(iceCandidates[i]);
     // }
-    console.log('Ice Candidate added');
   }
 }

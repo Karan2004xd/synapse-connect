@@ -13,7 +13,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class SignalingServerHandler extends TextWebSocketHandler {
   private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
   private final Map<String, Offer> offers = new ConcurrentHashMap<>();
@@ -28,19 +27,19 @@ public class SignalingServerHandler extends TextWebSocketHandler {
 
     System.out.println(type);
 
-    // if (type.equals("ice-candidate")) {
-    //   String iceCandidate = msg.get("iceCandidate");
+    if (type.equals("ice-candidate")) {
+      String iceCandidate = msg.get("iceCandidate");
 
-    //   String id = session.getId();
+      String id = session.getId();
 
-    //   if (!iceCandidates.containsKey(id)) {
-    //     List<String> list = new ArrayList<>(); 
-    //     list.add(iceCandidate);
-    //     iceCandidates.put(id, list);
-    //   } else {
-    //     iceCandidates.get(id).add(iceCandidate);
-    //   }
-    // } 
+      if (!iceCandidates.containsKey(id)) {
+        List<String> list = new ArrayList<>(); 
+        list.add(iceCandidate);
+        iceCandidates.put(id, list);
+      } else {
+        iceCandidates.get(id).add(iceCandidate);
+      }
+    } 
     // else if (type.equals("create-offer")) {
     //   String offer = msg.get("offer");
     //   Map<String, Object> map = new ConcurrentHashMap<>();
