@@ -35,11 +35,16 @@ export class ConnectionHandler {
         case 'new-user':
           this.#id = data.id;
           break;
-        case 'ice-candidate':
-          this.#addIceCandidate(JSON.parse(data.iceCandidate));
+        case 'answer-offer':
+          this.#answerOffer(data.offer, data.id);
           break;
-        case 'create-offer':
-          this.#answerOffer(JSON.parse(data.offer));
+        case 'answer-back-offer':
+          // console.log(data);
+          this.#answerBackOffer(data.offer, data.offererId);
+          break;
+        case 'add-ice-candidates':
+          console.log(data);
+          this.#addIceCandidate(data.iceCandidates);
           break;
         default:
           break;
@@ -57,8 +62,9 @@ export class ConnectionHandler {
       this.#didIOffer = true;
       this.#peerConnection.setLocalDescription(offer);
       this.#signalingServer.send(JSON.stringify({
-        type: 'create-offer',
-        offer: JSON.stringify(offer),
+        type: 'answer-offer',
+        offer: offer,
+        id: this.#id
       }));
     } catch (error) {
       console.log(error);
@@ -102,6 +108,16 @@ export class ConnectionHandler {
         }
       });
 
+      this.#peerConnection.addEventListener('track', (event) => {
+        console.log('Got a track');
+        console.log(event);
+
+        event.streams[0].getTracks().forEach(track => {
+          this.#remoteStream.addTrack(track, this.#remoteStream);
+          console.log('Here is where we will breathe');
+        });
+      });
+
       if (offerObj) {
         console.log(offerObj);
         await this.#peerConnection.setRemoteDescription(offerObj);
@@ -109,9 +125,17 @@ export class ConnectionHandler {
     }
   }
 
-  async #answerOffer(offerObj, iceCandidates) {
-    // console.log(offerObj, iceCandidates);
-    // this.#addIceCandidate(iceCandidates);
+  async #answerBackOffer(answer, offererId) {
+    await this.#peerConnection.setRemoteDescription(answer);
+
+    this.#signalingServer.send(JSON.stringify({
+      type: 'add-ice-candidates',
+      offererId: offererId,
+      answerId: this.#id
+    }));
+  }
+
+  async #answerOffer(offerObj, id) {
     await this.#getUserMedia();
     await this.#createPeerConnection(offerObj);
     const answer = await this.#peerConnection.createAnswer({});
@@ -121,19 +145,25 @@ export class ConnectionHandler {
     console.log(answer);
 
     offerObj.answer = answer;
+    this.#signalingServer.send(JSON.stringify({
+      type: 'add-ice-candidates',
+      offererId: id,
+      answererId: this.#id
+    }));
 
-    // const offerIceCandidates = await 
+    this.#signalingServer.send(JSON.stringify({
+      type: 'answer-back-offer',
+      offer: answer,
+      answererId: id,
+      offererId: this.#id 
+    }));
   }
 
-  #addIceCandidate(iceCandidate) {
-    console.log(iceCandidate);
-    if (iceCandidate) {
-      this.#peerConnection.addIceCandidate(iceCandidate);
-      console.log('Ice Candidate added');
+  #addIceCandidate(iceCandidates) {
+    for (let i = 0; i < iceCandidates.length; i++) {
+      const candidate = JSON.parse(iceCandidates[i]);
+      this.#peerConnection.addIceCandidate(candidate);
+      console.log(candidate);
     }
-
-    // for (let i = 0; i < iceCandidates.length; i++) {
-    //   this.#peerConnection.addIceCandidate(iceCandidates[i]);
-    // }
   }
 }
