@@ -8,19 +8,16 @@ export class ConnectionHandler {
 
   #localVideo;
   #remoteVideo;
-  #didIOffer;
 
   constructor() {
     this.#signalingServer = new WebSocket('ws://localhost:8080/socket');
     this.#localVideo = document.getElementById('local-video');
     this.#remoteVideo = document.getElementById('remote-video');
-    this.#didIOffer = false;
     this.#configuration = {
       iceServers: [
         {
           urls: [
             'stun:stun.l.google.com:19302'
-            // 'stun:stun1.l.google.com:19302'
           ]
         }
       ]
@@ -59,7 +56,6 @@ export class ConnectionHandler {
     try {
       console.log("Creating offer...");
       const offer = await this.#peerConnection.createOffer();
-      this.#didIOffer = true;
       this.#peerConnection.setLocalDescription(offer);
       this.#signalingServer.send(JSON.stringify({
         type: 'answer-offer',
