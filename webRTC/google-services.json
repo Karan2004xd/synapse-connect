@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "973140590102",
+    "project_id": "crwn-clothing-db-b7a08",
+    "storage_bucket": "crwn-clothing-db-b7a08.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973140590102:android:6ec4f3f4d047a12aac7f37",
+        "android_client_info": {
+          "package_name": "com.testing.webRTC"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "973140590102-s3gbhf0i6r3gpds3itp8nfqsv1iu4pcn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPaSVy_PjM_cUXW0tXU9hH3tv7lehtwG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "973140590102-s3gbhf0i6r3gpds3itp8nfqsv1iu4pcn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
