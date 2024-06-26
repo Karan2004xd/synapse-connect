@@ -25,7 +25,7 @@ public class MemberController {
     HttpStatus result = HttpStatus.FOUND;
 
     if (!memberService.checkMember(member)) {
-      memberService.saveMember(new Member(member.getName(), member.getEmail()));
+      memberService.saveMember(member);
       result = HttpStatus.CREATED;
     }
 
