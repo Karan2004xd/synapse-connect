@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import com.synapse.connect.app.exception.ConstraintViolationException;
 
 import com.synapse.connect.app.entity.Member;
-import com.synapse.connect.app.exception.EntityNotFoundException;
 import com.synapse.connect.app.repository.MemberRepository;
+import com.synapse.connect.app.utils.EntityUtil;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -26,23 +26,14 @@ public class MemberServiceImpl implements MemberService {
   }
 
   @Override
-  public Member getMember(String name, String email) {
-    Optional<Member> member = memberRepository.findByNameAndEmail(name, email);
-    return unwrapMember(member);
+  public Long getMemberIdByNameAndEmail(String name, String email) {
+    Optional<Long> member = memberRepository.findIdByNameAndEmail(name, email);
+    return EntityUtil.unwrap(member, Long.class);
   }
 
   @Override
-  public boolean checkMember(Member member) {
-    try {
-      getMember(member.getName(), member.getEmail());
-      return true;
-    } catch (EntityNotFoundException e) {
-      return false;
-    }
-  }
-
-  static Member unwrapMember(Optional<Member> entity) {
-    if (entity.isPresent()) return entity.get();
-    else throw new EntityNotFoundException(Member.class);
+  public Member getMemberById(Long id) {
+    Optional<Member> member = memberRepository.findById(id);
+    return EntityUtil.unwrap(member, Member.class);
   }
 }

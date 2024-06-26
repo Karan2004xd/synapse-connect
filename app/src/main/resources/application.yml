@@ -10,4 +10,10 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: update 
+
+# ddl-auto: create 
+      # to create new schemas and tables, but it will wipe every data and start fresh
+# ddl-auto: update
+      # to add data to the existing tables, this will not remove the existing 
+      # tables data but will update it with new ones

@@ -1,8 +1,13 @@
 package com.synapse.connect.app.web;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,15 +25,25 @@ public class MemberController {
   @Autowired
   MemberService memberService;
 
-  @PostMapping("/confirm")
-  public ResponseEntity<HttpStatus> confirmMember(@Valid @RequestBody Member member) {
-    HttpStatus result = HttpStatus.FOUND;
+  @PostMapping("/create")
+  public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody Member member) {
+    memberService.saveMember(member);
+    return new ResponseEntity<>(HttpStatus.CREATED);
+  }
 
-    if (!memberService.checkMember(member)) {
-      memberService.saveMember(member);
-      result = HttpStatus.CREATED;
-    }
+  @GetMapping("/validate")
+  public ResponseEntity<Map<String, Long>> validateMember(@Valid @RequestBody Member member) {
+    String name = member.getName();
+    String email = member.getEmail();
 
-    return new ResponseEntity<>(result);
+    Map<String, Long> responseData = new HashMap<>();
+    responseData.put("id", memberService.getMemberIdByNameAndEmail(name, email));
+
+    return new ResponseEntity<>(responseData, HttpStatus.FOUND);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Member> getMember(@PathVariable Long id) {
+    return new ResponseEntity<>(memberService.getMemberById(id), HttpStatus.OK);
   }
 }
