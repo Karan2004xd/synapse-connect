@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import com.synapse.connect.app.service.MemberService;
 import jakarta.validation.Valid;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/member")
 public class MemberController {
   
@@ -35,7 +37,7 @@ public class MemberController {
     return new ResponseEntity<>(responeseMap, HttpStatus.CREATED);
   }
 
-  @GetMapping("/validate")
+  @PostMapping("/validate")
   public ResponseEntity<Map<String, Long>> validateMember(@Valid @RequestBody Member member) {
     String name = member.getName();
     String email = member.getEmail();

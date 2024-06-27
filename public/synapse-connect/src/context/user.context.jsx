@@ -1,42 +1,80 @@
-import { createContext, useEffect, useState } from "react"
-import { createUserDocumentFromUser, onAuthStateChangeListener } from "../utils/firebase/firebase.utils";
+import { createContext, useState } from "react"
 
 export const UserContext = createContext({
-  currentUser: null,
-  setCurrentUser: () => null,
-
   email: null,
   setEmail: () => {},
+  updateEmail: () => {},
 
   displayName: null,
-  setDisplayName: () => {} 
+  setDisplayName: () => {}, 
+  updateDisplayName: () => {},
+
+  id: null,
+  setId: () => {},
+  updateId: () => {},
+
+  isAuthenticated: () => {}
 });
 
 export const UserProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [displayName, setDisplayName] = useState(null);
+  const [email, setEmail] = useState(() => 
+    localStorage.getItem('email')
+  );
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChangeListener((user) => {
-      console.log(user)
-      if (user) {
-        createUserDocumentFromUser(user);
-      }
-      setCurrentUser(user);
-    });
-    return unsubscribe;
-  }, []);
+  const [displayName, setDisplayName] = useState(() =>
+    localStorage.getItem('displayName')
+  );
+
+  const [id, setId] = useState(() => 
+    localStorage.getItem('id')
+  );
+
+  const updateEmail = (email) => {
+    setEmail(email);
+
+    if (email) {
+      localStorage.setItem('email', email);
+    } else {
+      localStorage.removeItem('email');
+    }
+  };
+
+  const updateDisplayName = (displayName) => {
+    setDisplayName(displayName);
+
+    if (displayName) {
+      localStorage.setItem('displayName', displayName);
+    } else {
+      localStorage.removeItem('displayName');
+    }
+  };
+
+  const updateId = (id) => {
+    setId(id);
+
+    if (id) {
+      localStorage.setItem('id', id);
+    } else {
+      localStorage.removeItem('id');
+    }
+  };
+
+  const isAuthenticated = () => id;
 
   const value = { 
-    currentUser, 
-    setCurrentUser, 
-
     email, 
     setEmail,
+    updateEmail,
 
     displayName, 
-    setDisplayName
+    setDisplayName,
+    updateDisplayName,
+
+    id,
+    setId,
+    updateId,
+
+    isAuthenticated
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>

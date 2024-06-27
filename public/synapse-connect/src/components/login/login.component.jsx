@@ -3,8 +3,9 @@ import './login.styles.css'
 import { getUsernameFromEmail, signInAuthUserWithEmailAndPassword, signInWithGooglePopup } from '../../utils/firebase/firebase.utils';
 import FormInput from '../form-input/form-input.component';
 import Button from '../button/button.component';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { UserContext } from '../../context/user.context';
+import { fetchPostData } from '../../utils/datafetch/datafetch.utils';
 
 const defaultFromFields = {
   email: '',
@@ -15,10 +16,34 @@ const Login = () => {
   const [formFields, setFormFields] = useState(defaultFromFields);
   const { email, password } = formFields;
 
-  const { setDisplayName, setEmail } = useContext(UserContext);
+  const { 
+    updateEmail, 
+    updateDisplayName, 
+    isAuthenticated,
+    updateId
+  } = useContext(UserContext);
+
+  if (isAuthenticated()) {
+    return (
+      <Navigate to={'/'} />
+    );
+  }
 
   const resetFormFields = () => {
     setFormFields(defaultFromFields);
+  };
+
+  const updateContext = async (displayName, email, requestType = 'validate') => {
+    updateDisplayName(displayName);
+    updateEmail(email);
+
+    const requestData = {
+      name: displayName,
+      email: email
+    };
+
+    const { id } = await fetchPostData(`/member/${requestType}`, requestData);
+    updateId(id);
   };
 
   const signInWithGoogle = async () => {
@@ -27,11 +52,7 @@ const Login = () => {
     const { user } = result;
     const { displayName, email } = user;
 
-    setDisplayName(displayName);
-    setEmail(email);
-
-    // console.log(user);
-    // console.log(displayName, email);
+    await updateContext(displayName, email);
   };
 
   const handleSubmit = async (event) => {
@@ -39,11 +60,9 @@ const Login = () => {
     try {
       await signInAuthUserWithEmailAndPassword(email, password);
       const result = await getUsernameFromEmail(email);
+      
+      await updateContext(result.displayName, result.email);
 
-      setDisplayName(result.displayName);
-      setEmail(result.email);
-
-      // console.log(result.displayName, result.email);
       resetFormFields();
     } catch (error) {
       switch (error.code) {
@@ -99,7 +118,6 @@ const Login = () => {
           >
             Google Sign In
           </Button>
-
         </div>
       </form>
     </div>
