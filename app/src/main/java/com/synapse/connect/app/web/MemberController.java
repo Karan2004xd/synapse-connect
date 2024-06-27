@@ -26,9 +26,13 @@ public class MemberController {
   MemberService memberService;
 
   @PostMapping("/create")
-  public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody Member member) {
-    memberService.saveMember(member);
-    return new ResponseEntity<>(HttpStatus.CREATED);
+  public ResponseEntity<Map<String, Long>> createMember(@Valid @RequestBody Member member) {
+    Member savedMember = memberService.saveMember(member);
+
+    Map<String, Long> responeseMap = new HashMap<>();
+    responeseMap.put("id", savedMember.getId());
+    
+    return new ResponseEntity<>(responeseMap, HttpStatus.CREATED);
   }
 
   @GetMapping("/validate")

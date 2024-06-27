@@ -17,9 +17,9 @@ public class MemberServiceImpl implements MemberService {
   MemberRepository memberRepository;
 
   @Override
-  public void saveMember(Member member) {
+  public Member saveMember(Member member) {
     try {
-      memberRepository.save(member);
+      return memberRepository.save(member);
     } catch (DataIntegrityViolationException e) {
       throw new ConstraintViolationException(e.getMessage());
     }
