@@ -23,7 +23,7 @@ public class Session {
   @Column(name = "session_name", nullable = false, unique = true)
   private String sessionName;
 
-  @Column(name = "session_link")
+  @Column(name = "session_link", unique = true, nullable = false)
   private String sessionLink;
 
   @Column(name = "session_password", nullable = false)
