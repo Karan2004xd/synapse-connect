@@ -12,10 +12,14 @@ import {
 } from 'firebase/auth';
 
 import {
-    doc,
+    collection,
+  doc,
   getDoc,
+  getDocs,
   getFirestore,
-  setDoc
+  query,
+  setDoc,
+  where
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -27,7 +31,7 @@ const firebaseConfig = {
   appId: "1:805572613592:web:ecf8702490565c93fd0ead"
 };
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({
@@ -38,7 +42,7 @@ export const auth = getAuth();
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 export const signInWithGoogleRedirect = () => signInWithRedirect(auth, provider);
 
-export const db = getFirestore();
+export const db = getFirestore(app);
 export const createUserDocumentFromUser = async (
   userAuth,
   additionalInformation
@@ -81,3 +85,22 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
 export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangeListener = (callback) => onAuthStateChanged(auth, callback);
+
+export const getUsernameFromEmail = async (email) => {
+  const queryData = query(
+    collection(db, "users"),
+    where("email", "==", email)
+  );
+
+  const querySnapshot = await getDocs(queryData);
+  if (querySnapshot) {
+    let result;
+    querySnapshot.forEach((doc) => {
+      result = {
+        displayName: doc.get('displayName'),
+        email: doc.get('email')
+      }
+    });
+    return result;
+  }
+};
