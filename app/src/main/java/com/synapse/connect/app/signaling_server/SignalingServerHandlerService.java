@@ -16,7 +16,7 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
   private Map<String, List<Participant>> meetingRooms = new ConcurrentHashMap<>();
   private ObjectMapper objectMapper = new ObjectMapper();
 
-  private void handleNewConnection(WebSocketSession session, String sessionLink) {
+  private void handleNewConnection(WebSocketSession session, String sessionLink) throws Exception {
     Participant participant = new Participant(session);
 
     if (!meetingRooms.containsKey(sessionLink)) {
@@ -26,13 +26,25 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
     } else {
       meetingRooms.get(sessionLink).add(participant);
     }
+
+    Map<String, String> responseMap = new ConcurrentHashMap<>();
+    responseMap.put(Constants.TYPE, Constants.NEW_USER);
+    responseMap.put(Constants.SESSION_ID, session.getId());
+
+    System.out.println("Handle new connection: " + session.getId());
+    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(responseMap)));
+
     System.out.println("New Connection Created");
   }
 
   private void handleCreateOffer(String sessionLink, TextMessage message, String sessionId) throws Exception {
     for (Participant p : meetingRooms.get(sessionLink)) {
       WebSocketSession session = p.getSession();
+      System.out.println(sessionId);
+      System.out.println(session.getId());
+
       if (!session.getId().equals(sessionId)) {
+        System.out.println("Create connection: " + session.getId());
         session.sendMessage(message);
       }
     }
@@ -75,6 +87,11 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
     answererSession.sendMessage(message);
   }
 
+  private void handleCloseConnection(String sessionLink, String sessionId) {
+    meetingRooms.get(sessionLink).remove(getParticipantById(sessionId, sessionLink));
+    System.out.println("Connection Closed: " + sessionId);
+  }
+
   @Override
   protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
     String payload = message.getPayload();
@@ -84,6 +101,9 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
     String sessionLink = msg.get(Constants.SESSION_LINK);
     String sessionId;
 
+    System.out.println(sessionLink);
+    System.out.println(requestType);
+
     switch (requestType) {
       case Constants.NEW_CONNECTION:
         handleNewConnection(session, sessionLink);
@@ -91,6 +111,7 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
 
       case Constants.CREATE_OFFER:
         sessionId = msg.get(Constants.SESSION_ID);
+        System.out.println("Create new connection: " + session.getId());
         handleCreateOffer(sessionLink, message, sessionId);
         break;
 
@@ -110,6 +131,11 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
       case Constants.ANSWER_ANSWERER_OFFER:
         answererId = msg.get(Constants.ANSWERER_ID);
         handleAnswerAnswererOffer(sessionLink, answererId, message);
+        break;
+
+      case Constants.CLOSE_CONNECTION:
+        sessionId = msg.get(Constants.SESSION_ID);
+        handleCloseConnection(sessionLink, sessionId);
         break;
 
       default:
