@@ -20,7 +20,7 @@ public class Session {
   private Long id;
 
   @NotBlank(message = "A session name is required!")
-  @Column(name = "session_name", nullable = false, unique = true)
+  @Column(name = "session_name", nullable = false)
   private String sessionName;
 
   @Column(name = "session_link", unique = true, nullable = false)
@@ -28,10 +28,6 @@ public class Session {
 
   @Column(name = "session_password", nullable = false)
   private String sessionPassword;
-
-  // @ManyToOne(optional = false)
-  // @JoinColumn(name = "host_id", referencedColumnName = "id")
-  // private Member host;
 
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "start_time")
@@ -52,9 +48,8 @@ public class Session {
   private Long hostId;
 
   public Session(String sessionName, String sessionPassword, Long hostId) {
-    sessionName = sessionName.replaceAll("\\s", "");
     this.sessionName = sessionName;
-    this.sessionLink = DEFAULT_ENDPOINT + sessionName + "-" + UUID.randomUUID().toString();
+    this.sessionLink = DEFAULT_ENDPOINT + sessionName.replaceAll("\\s", "") + "-" + UUID.randomUUID().toString();
     this.sessionPassword = sessionPassword;
     this.hostId = hostId;
   }

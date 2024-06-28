@@ -2,8 +2,8 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import './dashboard.styles.css';
 import { UserContext } from '../../context/user.context';
 import { useNavigate } from 'react-router-dom';
-import Popup from '../../components/popup/popup.component';
 import { DashboardContext } from '../../context/dashboard.context';
+import JoinMeeting from '../../components/join-meeting/join-meeting.component';
 
 const Dashboard = () => {
   const { isAuthenticated } = useContext(UserContext);
@@ -67,9 +67,7 @@ const Dashboard = () => {
       <button type='button' onClick={togglePopUp}>Join meeting</button>
       <button type='button' onClick={goToHistoryPage}>History</button>
 
-      <div>
-        {showPopup && <Popup />}
-      </div>
+      <JoinMeeting />
     </div>
   );
 };

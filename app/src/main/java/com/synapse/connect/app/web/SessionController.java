@@ -21,7 +21,7 @@ import jakarta.validation.Valid;
 public class SessionController {
 
   @Autowired
-  SessionService sessionService;
+  private SessionService sessionService;
 
   @PostMapping("/create")
   public ResponseEntity<Map<String, String>> createNewSession(@Valid @RequestBody Session session) {
@@ -32,8 +32,8 @@ public class SessionController {
     String sessionLink = savedSession.getSessionLink();
     String sessionPassword = savedSession.getSessionPassword();
 
-    responseMap.put("session_link", sessionLink);
-    responseMap.put("session_password", sessionPassword);
+    responseMap.put("sessionLink", sessionLink);
+    responseMap.put("sessionPassword", sessionPassword);
 
     return new ResponseEntity<>(responseMap, HttpStatus.CREATED);
   }
