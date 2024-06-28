@@ -28,3 +28,20 @@ export const fetchPostData = async (requestEndPoint, requestData = null) => {
     throw error;
   }
 };
+
+export const fetchGetData = async (requestUrl) => {
+  try {
+    const response = await fetch(requestUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    throw error;
+  }
+};

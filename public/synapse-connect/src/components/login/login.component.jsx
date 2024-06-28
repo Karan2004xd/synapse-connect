@@ -1,9 +1,9 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './login.styles.css'
 import { getUsernameFromEmail, signInAuthUserWithEmailAndPassword, signInWithGooglePopup } from '../../utils/firebase/firebase.utils';
 import FormInput from '../form-input/form-input.component';
 import Button from '../button/button.component';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/user.context';
 import { fetchPostData } from '../../utils/datafetch/datafetch.utils';
 
@@ -15,6 +15,7 @@ const defaultFromFields = {
 const Login = () => {
   const [formFields, setFormFields] = useState(defaultFromFields);
   const { email, password } = formFields;
+  const navigate = useNavigate();
 
   const { 
     updateEmail, 
@@ -23,11 +24,11 @@ const Login = () => {
     updateId
   } = useContext(UserContext);
 
-  if (isAuthenticated()) {
-    return (
-      <Navigate to={'/'} />
-    );
-  }
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [navigate, isAuthenticated]);
 
   const resetFormFields = () => {
     setFormFields(defaultFromFields);
