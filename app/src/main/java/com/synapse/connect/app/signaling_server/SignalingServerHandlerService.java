@@ -26,15 +26,6 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
     } else {
       meetingRooms.get(sessionLink).add(participant);
     }
-
-    Map<String, String> responseMap = new ConcurrentHashMap<>();
-    responseMap.put(Constants.TYPE, Constants.NEW_USER);
-    responseMap.put(Constants.SESSION_ID, session.getId());
-
-    System.out.println("Handle new connection: " + session.getId());
-    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(responseMap)));
-
-    System.out.println("New Connection Created");
   }
 
   private void handleCreateOffer(String sessionLink, TextMessage message, String sessionId) throws Exception {
@@ -141,5 +132,17 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
       default:
         break;
     }
+  }
+  
+  @Override
+  public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    Map<String, String> responseMap = new ConcurrentHashMap<>();
+    responseMap.put(Constants.TYPE, Constants.NEW_USER);
+    responseMap.put(Constants.SESSION_ID, session.getId());
+
+    System.out.println("Handle new connection: " + session.getId());
+    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(responseMap)));
+
+    System.out.println("New Connection Created");
   }
 }

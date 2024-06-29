@@ -1,0 +1,11 @@
+.main-div {
+  display: flex;
+  margin: 2rem;
+  flex-direction: row;
+}
+
+video {
+  width: 40%;
+  height: 50%;
+  margin: 1rem;
+}

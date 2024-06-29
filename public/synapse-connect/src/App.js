@@ -4,6 +4,7 @@ import Home from './routes/home/home.component';
 import SignUp from './components/sign-up/sign-up.component';
 import Dashboard from './routes/dashboard/dashboard.component';
 import History from './routes/history/history.component';
+import Room from './routes/room/room.component';
 
 const App = () => {
   return (
@@ -13,6 +14,7 @@ const App = () => {
       <Route path='/signup' element={<SignUp />} />
       <Route path='/dashboard' element={<Dashboard />} />
       <Route path='/history' element={<History />} />
+      <Route path='/room' element={<Room />} />
     </Routes>
   );
 }

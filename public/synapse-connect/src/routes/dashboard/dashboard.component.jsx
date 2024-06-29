@@ -67,7 +67,9 @@ const Dashboard = () => {
       <button type='button' onClick={togglePopUp}>Join meeting</button>
       <button type='button' onClick={goToHistoryPage}>History</button>
 
-      <JoinMeeting />
+      <div>
+        {showPopup && <JoinMeeting />}
+      </div>
     </div>
   );
 };
