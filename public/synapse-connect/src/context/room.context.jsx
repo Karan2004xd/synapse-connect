@@ -25,5 +25,5 @@ export const RoomProvider = ({ children }) => {
     updateSessionLink
   };
 
-  <RoomContext.Provider value={value}>{children}</RoomContext.Provider>
+  return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>
 };

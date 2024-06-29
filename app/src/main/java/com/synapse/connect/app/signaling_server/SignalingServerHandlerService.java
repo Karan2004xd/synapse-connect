@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -144,5 +145,20 @@ public class SignalingServerHandlerService extends TextWebSocketHandler {
     session.sendMessage(new TextMessage(objectMapper.writeValueAsString(responseMap)));
 
     System.out.println("New Connection Created");
+  }
+
+  @Override
+  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    System.out.println("Close session id: " + session.getId());
+    for (List<Participant> pList : meetingRooms.values()) {
+      for (Participant p : pList) {
+        System.out.println("session id: " + session.getId());
+        if (p.getSession().getId().equals(session.getId())) {
+          pList.remove(p);
+          System.out.println("Connection closed");
+          return ;
+        }
+      }
+    }
   }
 }

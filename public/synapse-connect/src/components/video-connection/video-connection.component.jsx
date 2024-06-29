@@ -1,16 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { RoomContext } from "../../context/room.context";
-
-const signalingServer = new WebSocket('ws://localhost:8080');
-
-const WebRTCConnection = () => {
-  const { sessionLink } = useContext(RoomContext);
-  const [sessionId, setSessionId] = useState(null);
-  
-};
+import WebRTCConnection from "../../utils/web-rtc-connection/web-rtc-connection.utils";
 
 const VideoConnection = ({ localVideoRef, remoteVideoRef, ...otherProps }) => {
   useEffect(() => {
+    // WebRTCConnection(localVideoRef.current, remoteVideoRef.current);
     // navigator.mediaDevices.getUserMedia({video: true, audio: true})
     //   .then(stream => {
     //     if (localVideoRef.current) {
